@@ -10,9 +10,23 @@ import total from "../../assets/total.svg";
 import { Container } from "./styles";
 
 export function Summary() {
-  const { transactions } = useContext(TransactionsContext)
+  const { transactions } = useContext(TransactionsContext);
 
-  console.log(transactions)
+  const summary = transactions.reduce((acc, transaction) => {
+    if (transaction.type === 'deposit') {
+      acc.incomes += transaction.amount;
+      acc.total += transaction.amount;
+    } else {
+      acc.outcomes += transaction.amount;
+      acc.total -= transaction.amount;
+    }
+    
+    return acc;
+  }, {
+    incomes: 0,
+    outcomes: 0,
+    total: 0
+  })
 
   return (
     <Container>
@@ -21,21 +35,37 @@ export function Summary() {
           <p>Income</p>
           <img src={income} alt="income" />
         </header>
-        <strong>R$1.000,00</strong>
+        <strong>
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(summary.incomes)}
+        </strong>
       </div>
       <div>
         <header>
           <p>Outcome</p>
           <img src={outcome} alt="outcome" />
         </header>
-        <strong>- R$500,00</strong>
+        <strong>
+          - 
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(summary.outcomes)}
+        </strong>
       </div>
       <div className="highlight-background">
         <header>
           <p>Total</p>
           <img src={total} alt="total" />
         </header>
-        <strong>R$500,00</strong>
+        <strong>
+          {new Intl.NumberFormat("pt-BR", {
+            style: "currency",
+            currency: "BRL",
+          }).format(summary.total)}
+        </strong>
       </div>
     </Container>
   );
